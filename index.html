@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaisaPath — 30-Day Money Fitness Challenge</title>
+<style>
+:root{
+  --bg:#f6f4ec; --card:#ffffff; --ink:#1c2b26; --mut:#6b7a72; --line:#e3e0d3;
+  --em:#0e9f6e; --em-d:#0b7a54; --amber:#f59e0b; --coral:#ef5350; --sky:#2f6fed;
+  --soft:#eefaf3; --soft2:#fdf6e3; --r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+h1,h2,h3{letter-spacing:-.02em}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 2px 10px rgba(28,43,38,.05)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:12px;font-weight:700;font-size:15px;transition:.15s}
+.btn-p{background:var(--em);color:#fff;box-shadow:0 4px 14px rgba(14,159,110,.35)}
+.btn-p:hover{background:var(--em-d)}
+.btn-g{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-g:hover{background:var(--soft)}
+.screen{display:none;min-height:100vh;padding:28px 20px;position:relative}
+.screen.active{display:block}
+.wrap{max-width:980px;margin:0 auto}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;background:#fff;border:1px solid var(--line);color:var(--mut)}
+/* login */
+#screen-login.active{display:flex;align-items:center;justify-content:center}
+.login-card{width:100%;max-width:440px;padding:36px 32px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:22px;margin-bottom:8px}
+.brand .badge{width:44px;height:44px;border-radius:13px;background:var(--em);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px}
+.field{width:100%;padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:#fbfaf5;font-size:15px;color:var(--ink)}
+.field:focus{outline:2px solid var(--em);border-color:transparent}
+.or{display:flex;align-items:center;gap:12px;color:var(--mut);font-size:12px;margin:14px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.otp-row{display:flex;gap:10px;justify-content:center;margin:12px 0}
+.otp{width:52px;height:58px;text-align:center;font-size:24px;font-weight:800;border-radius:12px;border:1px solid var(--line);background:#fbfaf5;color:var(--ink)}
+.otp:focus{outline:2px solid var(--em);border-color:transparent}
+.demo-otp{font-size:12.5px;color:var(--em-d);text-align:center;font-weight:600}
+.link{color:var(--sky);text-decoration:none;font-weight:600}
+/* onboarding */
+.choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:10px 0 22px}
+@media(max-width:680px){.choice-grid{grid-template-columns:1fr}}
+.choice{padding:16px;border-radius:14px;border:2px solid var(--line);background:#fff;text-align:left;transition:.15s}
+.choice:hover{border-color:var(--em)}
+.choice.sel{border-color:var(--em);background:var(--soft)}
+.choice h4{font-size:15px;margin-bottom:4px}
+.choice p{font-size:12.5px;color:var(--mut);line-height:1.5}
+/* dashboard */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+@media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:16px}
+.stat .v{font-size:24px;font-weight:900}
+.stat .k{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.dash-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}
+@media(max-width:820px){.dash-grid{grid-template-columns:1fr}}
+.panel{padding:20px}
+.panel h3{margin-bottom:4px}
+.panel .sub{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+.grid30{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+@media(max-width:520px){.grid30{grid-template-columns:repeat(6,1fr)}}
+.dcell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:12px;font-weight:800;background:#fbfaf5;border:1px solid var(--line);color:var(--mut);cursor:pointer;transition:.12s}
+.dcell:hover{border-color:var(--em)}
+.dcell.done{background:var(--em);border-color:var(--em);color:#fff}
+.dcell.cur{border:2px solid var(--em);color:var(--em-d);background:var(--soft)}
+.mission{border-left:4px solid var(--amber)}
+.lesson{background:var(--soft2);border-radius:12px;padding:14px;font-size:14px;line-height:1.65;margin:10px 0}
+.quiz-opt{display:block;width:100%;text-align:left;padding:11px 14px;border-radius:11px;border:1px solid var(--line);background:#fff;font-size:14px;margin-bottom:8px;transition:.12s}
+.quiz-opt:hover{border-color:var(--em)}
+.quiz-opt.right{border-color:var(--em);background:var(--soft);font-weight:700}
+.quiz-opt.wrong{border-color:var(--coral);background:#fdecec}
+.ledger-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+.ledger-item:last-child{border:none}
+.amt-in{font-weight:800;color:var(--em)}
+.amt-out{font-weight:800;color:var(--coral)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:110px;padding:8px 4px 0}
+.bar{flex:1;background:var(--em);border-radius:6px 6px 0 0;min-height:4px;position:relative;opacity:.85}
+.bar.out{background:var(--coral)}
+.bar span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:10px;color:var(--mut)}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(28,43,38,.45);padding:20px;z-index:40}
+.modal.open{display:flex}
+.modal .card{max-width:480px;width:100%;padding:26px;max-height:88vh;overflow:auto}
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:99;padding:12px 20px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;font-weight:600;box-shadow:0 12px 34px rgba(0,0,0,.35);display:none}
+.toast.show{display:block}
+.hidden{display:none!important}
+.tag-in{color:var(--em-d);font-weight:700}.tag-out{color:var(--coral);font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section id="screen-login" class="screen active">
+  <div class="login-card card">
+    <div class="brand"><div class="badge">💰</div> PaisaPath</div>
+    <p style="color:var(--mut);font-size:14px;line-height:1.6;margin-bottom:20px">Your 30-day money fitness challenge — one small money mission a day, from <b style="color:var(--ink)">broke to budget boss</b>.</p>
+    <div id="login-step-1">
+      <input class="field" id="login-email" type="email" placeholder="Email address" onkeydown="if(event.key==='Enter')sendOtp()">
+      <button class="btn btn-p" style="width:100%;margin-top:12px" onclick="sendOtp()">Send code →</button>
+      <div class="or">or</div>
+      <button class="btn btn-g" style="width:100%" onclick="doGuest()">👤 Continue as Guest (Demo)</button>
+      <div class="demo-otp" style="margin-top:12px">Trouble logging in? <a class="link" href="#" onclick="resetData();return false">Reset saved data</a></div>
+    </div>
+    <div id="login-step-2" class="hidden">
+      <p style="font-size:14px;color:var(--mut);margin-bottom:10px">Enter the 4-digit code sent to <b id="otp-email" style="color:var(--ink)"></b></p>
+      <div class="otp-row"><input class="otp" maxlength="1" inputmode="numeric"><input class="otp" maxlength="1" inputmode="numeric"><input class="otp" maxlength="1" inputmode="numeric"><input class="otp" maxlength="1" inputmode="numeric"></div>
+      <div class="demo-otp" id="demo-otp"></div>
+      <button class="btn btn-p" style="width:100%;margin-top:12px" onclick="verifyOtp()">Verify & Start</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ONBOARDING ============ -->
+<section id="screen-onboarding" class="screen">
+  <div class="wrap" style="max-width:760px">
+    <div class="card panel">
+      <h2 style="font-size:22px">Let's set your money goal, <span id="ob-name">friend</span> 👋</h2>
+      <p class="sub">3 quick questions and your challenge is ready.</p>
+      <h4 style="margin-bottom:4px">1 · What should we call you?</h4>
+      <input class="field" id="ob-nick" placeholder="Your name" style="max-width:320px;margin-bottom:18px">
+      <h4 style="margin-bottom:4px">2 · Monthly savings goal?</h4>
+      <input class="field" id="ob-goal" type="number" min="500" step="500" placeholder="e.g. 5000 (₹ per month)" style="max-width:320px;margin-bottom:18px">
+      <h4>3 · Your money personality?</h4>
+      <div class="choice-grid" id="pers-grid"></div>
+      <button class="btn btn-p" style="width:100%" onclick="finishOnboarding()">Start Day 1 →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section id="screen-dashboard" class="screen">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand"><div class="badge">💰</div> PaisaPath</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="pill" id="user-chip">👤</span>
+        <button class="pill" onclick="switchProfile()">⚙️ Change profile</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat card"><div class="v" id="st-saved">₹0</div><div class="k">Saved this month</div></div>
+      <div class="stat card"><div class="v" id="st-spent">₹0</div><div class="k">Tracked spending</div></div>
+      <div class="stat card"><div class="v" id="st-streak">0</div><div class="k">Day streak 🔥</div></div>
+      <div class="stat card"><div class="v" id="st-score">0<span style="font-size:14px;color:var(--mut)">/100</span></div><div class="k">Money fitness score</div></div>
+    </div>
+    <div class="dash-grid">
+      <div>
+        <div class="card panel mission" style="margin-bottom:16px">
+          <span class="pill" id="ms-day-pill">Day 1 of 30</span>
+          <h3 id="ms-topic" style="margin-top:10px">—</h3>
+          <div class="lesson" id="ms-lesson">—</div>
+          <p style="font-size:13.5px;color:var(--mut);margin-bottom:10px"><b style="color:var(--ink)">Today's mission:</b> <span id="ms-task">—</span></p>
+          <div id="ms-quiz"></div>
+          <button class="btn btn-p" style="width:100%;margin-top:8px" onclick="completeMission()">✅ Mark today's mission done</button>
+        </div>
+        <div class="card panel">
+          <h3>Quick log</h3>
+          <p class="sub">Money in or out — it takes 5 seconds and keeps your score honest.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input class="field" id="log-amt" type="number" min="1" placeholder="Amount ₹" style="flex:2;min-width:110px">
+            <select class="field" id="log-type" style="flex:2;min-width:130px">
+              <option value="in">➕ Saved / earned</option>
+              <option value="out">➖ Spent (needs a cut?)</option>
+            </select>
+            <select class="field" id="log-cat" style="flex:2;min-width:130px">
+              <option>Food & chai</option><option>Travel</option><option>Shopping</option>
+              <option>Bills & rent</option><option>Entertainment</option><option>SIP / savings</option><option>Other</option>
+            </select>
+            <button class="btn btn-p" style="flex:1" onclick="addEntry()">Log</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card panel" style="margin-bottom:16px">
+          <h3>30-day challenge map</h3>
+          <p class="sub">Tap any completed day to revisit its lesson.</p>
+          <div class="grid30" id="grid30"></div>
+        </div>
+        <div class="card panel" style="margin-bottom:16px">
+          <h3>Last 7 logs</h3>
+          <div class="bars" id="bars"></div>
+          <div style="height:22px"></div>
+        </div>
+        <div class="card panel">
+          <h3>Ledger</h3>
+          <p class="sub" id="ledger-sum">—</p>
+          <div id="ledger"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal" id="day-modal"><div class="card" id="day-card"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= PaisaPath v1 — app logic ================= */
+const KEY="paisapath.v1";
+const store={ load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"null") }catch(e){ return null } }, save(d){ try{ localStorage.setItem(KEY,JSON.stringify(d)) }catch(e){} } };
+const PERS=[
+ {id:"saver",name:"🐝 Steady Saver",sub:"You save when you remember — we'll make it automatic."},
+ {id:"spender",name:"🎉 Happy Spender",sub:"Money burns a hole — we'll build guardrails, not guilt."},
+ {id:"avoider",name:"🙈 Avoider",sub:"Bills scare you — we'll make money simple and friendly."}
+];
+function sanitize(v){ v=(v&&typeof v==="object")?v:{};
+  const num=(x,d)=>{x=parseInt(x,10);return isFinite(x)&&x>=0?x:d};
+  return { user:typeof v.user==="string"?v.user:"", nick:typeof v.nick==="string"?v.nick:"",
+    goal:num(v.goal,3000)||3000, pers:PERS.some(p=>p.id===v.pers)?v.pers:"saver",
+    day:Math.min(30,Math.max(1,num(v.day,1))), doneDays:Array.isArray(v.doneDays)?v.doneDays.map(d=>num(d,0)).filter(d=>d>=1&&d<=30):[],
+    quizRight:num(v.quizRight,0), quizDone:num(v.quizDone,0),
+    entries:Array.isArray(v.entries)?v.entries.filter(e=>e&&typeof e==="object").map(e=>({t:+e.t>0?+e.t:0,type:e.type==="in"?"in":"out",cat:typeof e.cat==="string"?e.cat:"Other",ts:num(e.ts,Date.now())})):[] };
+}
+let S=sanitize(store.load()); function persist(){ store.save(S); }
+function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2600); }
+function show(id){ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); document.getElementById(id).classList.add("active"); }
+
+/* ================= 30-day curriculum ================= */
+const CUR=[
+ ["Track every rupee","Today you only <b>observe</b>. Write down everything you spend — even a ₹10 chai. Awareness is step one of money fitness; most people can't name where 30% of their monthly money goes.","Log at least 3 spends or savings in Quick Log today.","How much of your monthly spending can most people NOT account for?",["About 10%","About 30%","About 70%"],1],
+ ["Needs vs wants","<b>Needs</b> = food, rent, medicines, travel to work. <b>Wants</b> = swiggy extra, new earphones, 4th OTT app. Neither is bad — but needs come first in the budget.","Look at yesterday's spends and mark one thing that was a 'want'.","Which one is a NEED?",["Movie night","Monthly medicine","New phone case"],1],
+ ["The 50/30/20 rule","A simple budget: <b>50%</b> of income for needs, <b>30%</b> for wants, <b>20%</b> for savings. If income is ₹30,000 → save ₹6,000 first, live on the rest.","Calculate your 20% and type it into your goal if you haven't set one.","If you earn ₹20,000/month, 50/30/20 says save…",["₹2,000","₹4,000","₹10,000"],1],
+ ["Build your mini budget","List your fixed costs (rent, bills, data pack) and variable costs (food, fun). Subtract from income. What remains is your <b>free money</b> — spend it without guilt.","Log your biggest fixed cost in Quick Log (category: Bills & rent).","Rent and data pack are examples of…",["Variable costs","Fixed costs","Savings"],1],
+ ["Emergency fund basics","Before investing, park <b>3–6 months of expenses</b> in a savings account or FD. This fund is what keeps a job loss or phone repair from becoming a loan.","Set a mini target: save 1 day of expenses this week.","An emergency fund should ideally cover…",["6 months of expenses","1 year of salary","Just EMI amounts"],0],
+ ["Subscription audit","OTT, gym, cloud storage, auto-renew apps… small monthly leaks sink big ships. Cancel anything you haven't used in 2 weeks.","Find ONE unused subscription and cancel or pause it.","A ₹199/month unused subscription wastes how much a year?",["₹199","₹1,199","₹2,388"],2],
+ ["Cook-at-home day","Eating out costs 3–5× home food. One home-cooked day per week can save ₹1,000+/month — and it's usually healthier.","Cook or eat at home for ALL meals today. Log what you would have spent as 'Saved'.","Ordering food at ₹300 vs cooking at ₹60 saves…",["₹40","₹240","₹360"],1],
+ ["Beat impulse buying","Traps: 'limited offer', 'free delivery above ₹499', checkout timers. Weapon: the <b>24-hour rule</b> — any non-essential item waits a day in the cart.","Put one pending online wish in your cart and DON'T buy it today.","The 24-hour rule means…",["Buy only at night","Wait one day before non-essential buys","Pay in 24 EMIs"],1],
+ ["Shop by unit price","Bigger packs aren't always cheaper. Compare <b>price per kg/gram/ml</b> — the ₹/kg line on price tags. Also never grocery-shop hungry.","Check unit prices on one item you buy weekly.","Which is better value?",["500g at ₹120","1kg at ₹210","Same price/kg"],1],
+ ["Week 1 review 📊","Open your ledger: money IN vs OUT. There's no shame in a red week — data, not drama. Spot one pattern you'll change in week 2.","Review your ledger and log tomorrow's planned spend in advance.","A weekly money review works best when it is…",["Emotional","Data-based, no drama","Skipped"],1],
+ ["Automate your savings","Pay yourself FIRST: standing instruction that moves 20% to savings on salary day. If you save what's left at month-end, nothing is left.","Set up any auto-transfer, or log your first auto-save.","Pay yourself first means…",["Buy yourself a treat","Save on salary day, before spending","Spend only on yourself"],1],
+ ["Start a SIP (even ₹500)","A SIP auto-invests a fixed amount monthly into a mutual fund. It builds the investing habit — start small, learn while the amount is small.","Explore any SIP calculator online for 5 minutes.","SIP stands for…",["Simple Interest Plan","Systematic Investment Plan","Savings in Parts"],1],
+ ["Compound interest magic","₹5,000/month at ~12% for 10 years ≈ ₹11.6 lakh; for 20 years ≈ ₹50 lakh. Time in the market beats timing the market — start early, even small.","Use a compound calculator: check your goal amount after 10 years.","Compounding rewards which factor most?",["Starting early","Starting big","Timing crashes"],0],
+ ["Good debt vs bad debt","Good debt buys assets or skills (education, home). Bad debt funds lifestyle (phone EMI for status, credit-card shopping). Rule: if it doesn't earn or last, don't borrow for it.","List any loan you have and mark it Good / Bad.","A loan for a gaming setup is usually…",["Good debt","Bad debt","Free money"],1],
+ ["The minimum-due trap","Paying credit card 'minimum due' = 36–42% yearly interest on the rest. Always pay the FULL bill, and never withdraw cash on a credit card.","Check your card statement (or a friend's) — note the interest rate.","Minimum due payment causes interest of about…",["2% yearly","36–42% yearly","No interest at all"],1],
+ ["Know your credit score","750+ = cheaper loans and faster approvals. Built by paying EMIs/cards on time and keeping card usage under ~30% of limit. Check free once a year.","Find your credit score free (CIBIL/other) if you have any credit history.","A good credit score is…",["Below 500","750 or above","Exactly 900 only"],1],
+ ["No-spend day 🔒","One full day spending ₹0. It's a muscle, not a punishment. Carry home food, skip cabs, unplug shopping apps for a day.","Log ₹0 spends — and log what you SAVED as money in.","A no-spend day trains you to…",["Punish yourself","Notice impulses","Earn interest"],1],
+ ["Negotiate one bill","Call your internet/DTH/insurance provider and ask for a better plan — 'I'm comparing options' works. Negotiating 10 minutes can save hundreds monthly.","Negotiate or switch ONE recurring bill.","The magic sentence while negotiating is…",["'Give me discount or I cut the call'","'I'm comparing options'","'My friend gets it free'"],1],
+ ["Side income seeds","Skills → income: tuition, freelancing, weekend gigs, selling unused stuff. One extra income stream, even ₹2,000/month, is a big fitness boost.","List 2 skills you could sell. Sell one unused item this week.","The fastest side income for most beginners is…",["Selling unused items","Day trading","Crypto"],0],
+ ["Week 3 review 📊","Compare week 1 vs week 3 ledger. Saved more? That's compounding discipline. Spent more? Find the category — not the guilt.","Log your week-3 savings total.","Reviews should compare…",["Yourself with friends","Your past week with your current week","Nothing at all"],1],
+ ["Insurance basics","Health + term life insurance protect your savings from disasters. Health: even employer cover may not be enough. Term life: only if family depends on your income.","Check if you have health cover and note the amount.","Term life insurance is needed when…",["You're single with no dependents","Family depends on your income","Everyone always"],1],
+ ["Money & tax basics","Know your income-tax slab, and use deductions: 80C (PF, ELSS, life insurance) up to ₹1.5 lakh, 80D health insurance. Filing ITR on time also builds your financial record.","Check which tax-saving investments you already have.","Section 80C allows deductions up to…",["₹50,000","₹1.5 lakh","₹10 lakh"],1],
+ ["Spot the scam 🚩","Red flags: 'guaranteed 40% returns', lottery calls, OTP requests, unknown 'kyc expired' links, crypto WhatsApp groups. No legit company asks for your OTP.","Tell one person about a scam you've seen.","'Guaranteed 40% return' offers are…",["Rare gems","Almost always scams","Bank products"],1],
+ ["Goal-based saving","Name your goals: phone ₹25k (6 months), Goa trip ₹40k (1 year), bike ₹80k (18 months). Named goals save 2× faster than 'I should save something'.","Write one named goal with amount + deadline.","Named goals work better because…",["They're lucky","They're specific and timed","Banks reward them"],1],
+ ["Sinking funds","For known big spends (festivals, insurance premium, birthdays), save small monthly in advance. Diwali in January, wedding gifts in April.","Pick one upcoming event and divide its cost by months left.","A sinking fund is…",["Emergency money","Pre-saving for known expenses","A loss-making fund"],1],
+ ["Smart comparison","Before any purchase over ₹1,000: 3 quotes (online + offline), read 3 recent reviews, check price history tools. 20 minutes of checking beats 20% regret.","Compare prices on one item you plan to buy.","Before a big purchase, compare at least…",["1 shop","3 options","No options"],1],
+ ["Talk about money","Money grows when families/partners talk: shared goals, hidden debt, elder-care plans. One honest conversation prevents a hundred arguments.","Have one real money conversation with family/friend.","About money conversations, the app says…",["Avoid them","One honest talk prevents a hundred arguments","Only talk during fights"],1],
+ ["Where to invest basics","Short term (<3y): FD/RD & savings. Long term (5y+): index mutual funds, PPF, NPS. Never invest borrowed money, and diversify — don't bet on one stock.","Match one of your goals to one investment type.","Money needed within 2 years should go to…",["Small-cap stocks","FD / RD / savings","Crypto"],1],
+ ["Your 30-day report card","Saved ₹X, streak Y days, score Z. Whatever the numbers — you now KNOW your money. Awareness + automation + review is the whole game.","Log today's savings and view your full stats.","The 3 habits of this challenge are…",["Earn, invest, retire","Track, automate, review","Spend, save, regret"],1],
+ ["Graduation 🎓","You did it! Keep it alive: monthly review day (same date), auto-save continues, next goal already named. Money fitness, like body fitness, is maintenance for life.","Set your next month's goal and write your money plan.","After the challenge ends, the key is…",["Stop tracking","Maintain: monthly review + auto-save","Spend it all"],1]
+];
+function cur(d){ return CUR[Math.min(Math.max(d,1),30)-1]; }
+function inr(n){ return "₹"+Number(n).toLocaleString("en-IN"); }
+
+/* ================= auth ================= */
+let otpCode="";
+function sendOtp(){ try{
+  const e=document.getElementById("login-email").value.trim().toLowerCase();
+  if(!e){toast("Enter your email first");return}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){toast("Enter a valid email address");return}
+  otpCode=String(Math.floor(1000+Math.random()*9000)); S.user=e; persist();
+  document.getElementById("otp-email").textContent=e;
+  document.getElementById("demo-otp").textContent="Demo: your code is "+otpCode;
+  document.getElementById("login-step-1").classList.add("hidden");
+  document.getElementById("login-step-2").classList.remove("hidden");
+}catch(e){ toast("⚠️ Error: "+e.message) } }
+function verifyOtp(){ try{
+  const v=[...document.querySelectorAll(".otp")].map(i=>i.value).join("");
+  if(v.length<4){toast("Enter the complete 4-digit code");return}
+  if(v===otpCode){ afterAuth(); } else { toast("Wrong code — check and retry"); }
+}catch(e){ toast("⚠️ Error: "+e.message) } }
+function doGuest(){ try{ S.user="Guest"; persist(); afterAuth(); }catch(e){ toast("⚠️ Error: "+e.message) } }
+function resetData(){ try{ localStorage.removeItem(KEY) }catch(e){}; try{ location.reload() }catch(e){ toast("Saved data cleared — refresh the page") } }
+function afterAuth(){ try{ if(!S.nick||S.doneDays.length===0&&S.day===1&&!S.entries.length&&!S.onboarded){ renderPers(); document.getElementById("ob-name").textContent=S.nick||S.user.split("@")[0]||"friend"; show("screen-onboarding"); }
+  else { buildDash(); show("screen-dashboard"); } }catch(e){ try{ show("screen-onboarding") }catch(_){} } }
+
+/* ================= onboarding ================= */
+function renderPers(){ document.getElementById("pers-grid").innerHTML=PERS.map(p=>`<button class="choice ${S.pers===p.id?"sel":""}" onclick="pickPers('${p.id}')"><h4>${p.name}</h4><p>${p.sub}</p></button>`).join(""); }
+function pickPers(id){ S.pers=id; persist(); renderPers(); }
+function finishOnboarding(){ try{
+  const n=document.getElementById("ob-nick").value.trim(), g=parseInt(document.getElementById("ob-goal").value,10);
+  if(n)S.nick=n; if(isFinite(g)&&g>0)S.goal=g; S.onboarded=true; persist();
+  buildDash(); show("screen-dashboard"); toast("Challenge ready — Day 1 unlocked 💪");
+}catch(e){ toast("⚠️ Error: "+e.message) } }
+function switchProfile(){ S.onboarded=false; persist(); renderPers(); show("screen-onboarding"); }
+
+/* ================= dashboard ================= */
+function savedSum(){ return S.entries.filter(e=>e.type==="in").reduce((a,e)=>a+e.t,0); }
+function spentSum(){ return S.entries.filter(e=>e.type==="out").reduce((a,e)=>a+e.t,0); }
+function score(){ const sv=savedSum(), goalPart=Math.min(60,Math.round(sv/Math.max(1,S.goal)*60)), quizPart=S.quizDone?Math.round(S.quizRight/S.quizDone*20):0, trackPart=Math.min(20,S.entries.length*2); return goalPart+quizPart+trackPart; }
+function buildDash(){
+  document.getElementById("user-chip").textContent="👤 "+(S.nick||S.user||"Learner");
+  document.getElementById("st-saved").textContent=inr(savedSum());
+  document.getElementById("st-spent").textContent=inr(spentSum());
+  document.getElementById("st-streak").textContent=S.doneDays.length;
+  document.getElementById("st-score").innerHTML=score()+"<span style='font-size:14px;color:var(--mut)'>/100</span>";
+  const d=S.day,c=cur(d);
+  document.getElementById("ms-day-pill").textContent="Day "+d+" of 30 · "+PERS.find(p=>p.id===S.pers).name.split(" ")[1];
+  document.getElementById("ms-topic").textContent="Day "+d+" · "+c[0];
+  document.getElementById("ms-lesson").innerHTML=c[1];
+  document.getElementById("ms-task").textContent=c[2];
+  document.getElementById("ms-quiz").innerHTML=`<p style="font-size:13.5px;font-weight:700;margin:8px 0">🧠 Quick check: ${c[3]}</p>`+c[4].map((o,i)=>`<button class="quiz-opt" id="qo${i}" onclick="answerQuiz(${i},${c[5]})">${o}</button>`).join("");
+  document.getElementById("grid30").innerHTML=Array.from({length:30},(_,i)=>{ const dd=i+1; const cl=dd<S.day?"done":dd===S.day?"cur":""; return `<div class="dcell ${cl}" onclick="openDay(${dd})">${dd}</div>` }).join("");
+  renderLedger(); renderBars();
+}
+function answerQuiz(i,right){ const c=cur(S.day);
+  [...document.querySelectorAll(".quiz-opt")].forEach((b,j)=>{ b.onclick=null; b.className="quiz-opt "+(j===right?"right":j===i?"wrong":""); b.style.opacity=j===right||j===i?1:.6; });
+  S.quizDone++; if(i===right){ S.quizRight++; toast("Correct! +quiz point ✅"); } else toast("Not quite — correct answer highlighted");
+  persist();
+}
+function completeMission(){ try{
+  if(!S.doneDays.includes(S.day))S.doneDays.push(S.day);
+  if(S.day<30)S.day++;
+  persist(); buildDash(); show("screen-dashboard");
+  toast("Mission done — Day "+S.day+" unlocked 🎉");
+}catch(e){ toast("⚠️ Error: "+e.message) } }
+function addEntry(){ try{
+  const a=parseInt(document.getElementById("log-amt").value,10);
+  if(!isFinite(a)||a<=0){toast("Enter an amount first");return}
+  S.entries.push({t:a,type:document.getElementById("log-type").value,cat:document.getElementById("log-cat").value,ts:Date.now()});
+  document.getElementById("log-amt").value="";
+  persist(); buildDash();
+  toast("Logged "+(document.getElementById("log-type").value==="in"?"savings ":"spending ")+inr(a)+" ✅");
+}catch(e){ toast("⚠️ Error: "+e.message) } }
+function renderLedger(){ const el=document.getElementById("ledger"); const es=S.entries.slice(-6).reverse();
+  document.getElementById("ledger-sum").textContent="Total in "+inr(savedSum())+" · total out "+inr(spentSum());
+  el.innerHTML=es.length?es.map(e=>`<div class="ledger-item"><span>${e.type==="in"?"🏷️":"💸"} ${e.cat}</span><span class="${e.type==="in"?"amt-in":"amt-out"}">${e.type==="in"?"+":"−"}${inr(e.t)}</span></div>`).join(""):`<p style="font-size:13px;color:var(--mut)">Nothing logged yet — add your first entry above.</p>`; }
+function renderBars(){ const el=document.getElementById("bars"); const es=S.entries.slice(-7);
+  const mx=Math.max(1,...es.map(e=>e.t));
+  el.innerHTML=es.length?es.map(e=>`<div class="bar ${e.type==="out"?"out":""}" style="height:${Math.max(6,Math.round(e.t/mx*100))}%"><span>${e.type==="in"?"+":"−"}</span></div>`).join(""):`<p style="font-size:13px;color:var(--mut)">Your last 7 logs will appear as bars here.</p>`; }
+function openDay(d){ const c=cur(d); const state=d===S.day?"<b style='color:var(--em-d)'>📌 Today</b>":d<S.day?"<b style='color:var(--em-d)'>✅ Completed</b>":"<b style='color:var(--coral)'>🔒 Locked</b>";
+  document.getElementById("day-card").innerHTML=`<h2>Day ${d} · ${c[0]}</h2><p class="sub" style="margin:6px 0 10px">${state}</p><div class="lesson">${c[1]}</div><p style="font-size:13.5px"><b>Mission:</b> ${c[2]}</p><button class="btn btn-g" style="width:100%;margin-top:14px" onclick="document.getElementById('day-modal').classList.remove('open')">✕ Close</button>`;
+  document.getElementById("day-modal").classList.add("open"); }
+document.getElementById("day-modal").addEventListener("click",e=>{ if(e.target.id==="day-modal")e.target.classList.remove("open"); });
+
+/* init */
+document.querySelectorAll(".otp").forEach((el,i,arr)=>el.addEventListener("input",()=>{ el.value=el.value.replace(/\D/g,""); if(el.value&&arr[i+1])arr[i+1].focus(); }));
+if(S.user&&S.nick&&(S.doneDays.length||S.entries.length)){ try{ buildDash(); show("screen-dashboard"); }catch(e){ persist(); show("screen-login"); } }
+
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
